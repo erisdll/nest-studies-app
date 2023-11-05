@@ -4,26 +4,25 @@ import {
   Post,
   Put,
   Delete,
-  HttpCode,
-  Header,
   Param,
-  Query,
   Body,
 } from '@nestjs/common';
-import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { UpdateCatDto } from './dto/update-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
+  constructor(private catsService: CatsService) {}
   @Post()
-  @HttpCode(201)
-  @Header('cache-control', 'none')
-  async create(@Body() CreateCatDto: CreateCatDto) {
-    return 'This action adds a new cat';
+  async create(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
   }
 
   @Get()
-  findAll(@Query() query: ListAllEntities) {
-    return `This action returns all cats (limit: ${query} items)`;
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
   }
 
   @Get(':id')
@@ -32,8 +31,8 @@ export class CatsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() UpdateCatDto: UpdateCatDto) {
-    return `This action updates a #${id} cat`;
+  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+    this.catsService.update(updateCatDto);
   }
 
   @Delete(':id')
